@@ -1,0 +1,64 @@
+#cloud-config
+package_update: true
+package_upgrade: true
+
+packages:
+  - wget
+  - curl
+  - git
+  - jq
+
+write_files:
+  - path: /etc/hosts.puppet
+    content: |
+      ${puppet_master_ip} puppet puppet-master
+    permissions: '0644'
+
+runcmd:
+  # Add puppet hostname
+  - cat /etc/hosts.puppet >> /etc/hosts
+
+  # Install Puppet 8
+  - wget https://apt.puppet.com/puppet8-release-jammy.deb
+  - dpkg -i puppet8-release-jammy.deb
+  - apt-get update
+  - apt-get install -y puppetserver puppet-agent
+
+  # Install SOPS
+  - |
+    SOPS_VERSION="3.8.1"
+    wget -O /usr/local/bin/sops "https://github.com/getsops/sops/releases/download/v$${SOPS_VERSION}/sops-v$${SOPS_VERSION}.linux.amd64"
+    chmod +x /usr/local/bin/sops
+
+  # Install age
+  - |
+    AGE_VERSION="1.1.1"
+    wget -O /tmp/age.tar.gz "https://github.com/FiloSottile/age/releases/download/v$${AGE_VERSION}/age-v$${AGE_VERSION}-linux-amd64.tar.gz"
+    tar -xzf /tmp/age.tar.gz -C /tmp
+    mv /tmp/age/age /usr/local/bin/
+    mv /tmp/age/age-keygen /usr/local/bin/
+    chmod +x /usr/local/bin/age /usr/local/bin/age-keygen
+
+  # Generate age key for SOPS
+  - mkdir -p /etc/puppetlabs/puppet/sops
+  - age-keygen -o /etc/puppetlabs/puppet/sops/age-key.txt 2>/etc/puppetlabs/puppet/sops/age-public-key.txt
+  - chmod 600 /etc/puppetlabs/puppet/sops/age-key.txt
+  - chown puppet:puppet /etc/puppetlabs/puppet/sops/age-key.txt
+
+  # Configure Puppet Server memory (adjust for cx21 - 4GB RAM)
+  - sed -i 's/Xms2g/Xms1g/' /etc/default/puppetserver
+  - sed -i 's/Xmx2g/Xmx1g/' /etc/default/puppetserver
+
+  # Configure autosigning for our network (for demo - use policy-based in production)
+  - echo "*.internal" > /etc/puppetlabs/puppet/autosign.conf
+  - echo "tomcat-*" >> /etc/puppetlabs/puppet/autosign.conf
+
+  # Start Puppet Server
+  - systemctl enable puppetserver
+  - systemctl start puppetserver
+
+  # Add puppet bin to PATH
+  - echo 'export PATH=$PATH:/opt/puppetlabs/bin' >> /root/.bashrc
+
+  # Signal completion
+  - touch /var/run/puppet-master-ready

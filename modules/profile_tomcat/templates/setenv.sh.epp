@@ -1,0 +1,15 @@
+<%- |
+  String $java_home,
+  String $java_opts,
+| -%>
+#!/bin/bash
+# Tomcat environment settings - Managed by Puppet
+
+export JAVA_HOME="<%= $java_home %>"
+export CATALINA_PID="$CATALINA_BASE/temp/tomcat.pid"
+
+# JVM Options
+export JAVA_OPTS="<%= $java_opts %>"
+
+# Catalina options
+export CATALINA_OPTS="-Djava.security.egd=file:/dev/urandom"

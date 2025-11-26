@@ -1,0 +1,6 @@
+# Copy this file to terraform.tfvars and fill in your values
+# DO NOT commit terraform.tfvars to git!
+
+hcloud_token        = "your-hetzner-cloud-api-token"
+ssh_public_key_path = "~/.ssh/id_rsa.pub"
+location            = "nbg1"  # nbg1 (Nuremberg), fsn1 (Falkenstein), hel1 (Helsinki)

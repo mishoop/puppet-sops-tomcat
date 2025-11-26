@@ -1,0 +1,33 @@
+<%- |
+  String $catalina_home,
+  String $java_home,
+| -%>
+# Tomcat systemd service - Managed by Puppet
+[Unit]
+Description=Apache Tomcat Web Application Container
+After=network.target
+
+[Service]
+Type=forking
+
+User=tomcat
+Group=tomcat
+
+Environment="JAVA_HOME=<%= $java_home %>"
+Environment="CATALINA_HOME=<%= $catalina_home %>"
+Environment="CATALINA_BASE=<%= $catalina_home %>"
+Environment="CATALINA_PID=<%= $catalina_home %>/temp/tomcat.pid"
+
+ExecStart=<%= $catalina_home %>/bin/startup.sh
+ExecStop=<%= $catalina_home %>/bin/shutdown.sh
+
+# Restart on failure
+Restart=on-failure
+RestartSec=10
+
+# Security hardening
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

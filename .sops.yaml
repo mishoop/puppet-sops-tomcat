@@ -1,0 +1,16 @@
+# SOPS configuration file
+# Update the 'age' field with your actual public key after generating it
+
+creation_rules:
+  # Encrypt all secret files with age
+  - path_regex: environments/.*/hieradata/secrets/.*\.yaml$
+    age: >-
+      age1yqd88u5lzxysrn5cgkf6xsqvek4nqqhnantzktpwkepnfw4ur4zqngjqsc 
+    # Replace the above with your actual age public key from:
+    # /etc/puppetlabs/puppet/sops/age-public-key.txt on puppet-master
+
+  # You can add multiple recipients for shared access
+  # - path_regex: environments/.*/hieradata/secrets/.*\.yaml$
+  #   age: >-
+  #     age1key1...,
+  #     age1key2...

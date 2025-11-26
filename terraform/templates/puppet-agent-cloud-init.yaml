@@ -1,0 +1,49 @@
+#cloud-config
+package_update: true
+package_upgrade: true
+
+packages:
+  - wget
+  - curl
+  - openjdk-17-jdk
+
+write_files:
+  - path: /etc/hosts.puppet
+    content: |
+      ${puppet_master_ip} puppet puppet-master ${puppet_master_fqdn}
+    permissions: '0644'
+
+runcmd:
+  # Add puppet master to hosts
+  - cat /etc/hosts.puppet >> /etc/hosts
+
+  # Install Puppet 8 Agent
+  - wget https://apt.puppet.com/puppet8-release-jammy.deb
+  - dpkg -i puppet8-release-jammy.deb
+  - apt-get update
+  - apt-get install -y puppet-agent
+
+  # Configure Puppet Agent
+  - |
+    cat > /etc/puppetlabs/puppet/puppet.conf << 'EOF'
+    [main]
+    server = puppet-master
+    certname = $(hostname -f)
+    environment = production
+    runinterval = 30m
+
+    [agent]
+    report = true
+    EOF
+
+  # Wait for Puppet master to be ready
+  - sleep 60
+
+  # Start Puppet Agent
+  - /opt/puppetlabs/bin/puppet resource service puppet ensure=running enable=true
+
+  # Run Puppet agent
+  - /opt/puppetlabs/bin/puppet agent --test --waitforcert 60 || true
+
+  # Add puppet bin to PATH
+  - echo 'export PATH=$PATH:/opt/puppetlabs/bin' >> /root/.bashrc

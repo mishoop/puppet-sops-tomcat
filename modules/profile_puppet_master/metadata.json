@@ -1,0 +1,21 @@
+{
+  "name": "profile-puppet-master",
+  "version": "1.0.0",
+  "author": "Infrastructure Team",
+  "summary": "Puppet master profile with r10k and SOPS support",
+  "license": "MIT",
+  "source": "",
+  "dependencies": [],
+  "operatingsystem_support": [
+    {
+      "operatingsystem": "Ubuntu",
+      "operatingsystemrelease": ["22.04"]
+    }
+  ],
+  "requirements": [
+    {
+      "name": "puppet",
+      "version_requirement": ">= 7.0.0 < 9.0.0"
+    }
+  ]
+}

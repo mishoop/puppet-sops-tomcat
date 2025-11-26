@@ -1,0 +1,20 @@
+<%- |
+  String $remote,
+  String $basedir,
+| -%>
+# r10k configuration - Managed by Puppet
+---
+:cachedir: '/var/cache/r10k'
+
+:sources:
+  :control:
+    remote: '<%= $remote %>'
+    basedir: '<%= $basedir %>'
+
+:purgedirs:
+  - '<%= $basedir %>'
+
+# Deploy settings
+:deploy:
+  purge_levels: ['deployment', 'environment', 'puppetfile']
+  generate_types: true

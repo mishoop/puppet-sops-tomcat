@@ -1,0 +1,72 @@
+<%- |
+  Integer $http_port,
+  Integer $https_port,
+  Integer $ajp_port,
+  Integer $shutdown_port,
+| -%>
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Tomcat server.xml managed by Puppet
+-->
+<Server port="<%= $shutdown_port %>" shutdown="SHUTDOWN">
+  <Listener className="org.apache.catalina.startup.VersionLoggerListener" />
+  <Listener className="org.apache.catalina.core.AprLifecycleListener" SSLEngine="on" />
+  <Listener className="org.apache.catalina.core.JreMemoryLeakPreventionListener" />
+  <Listener className="org.apache.catalina.mbeans.GlobalResourcesLifecycleListener" />
+  <Listener className="org.apache.catalina.core.ThreadLocalLeakPreventionListener" />
+
+  <GlobalNamingResources>
+    <Resource name="UserDatabase" auth="Container"
+              type="org.apache.catalina.UserDatabase"
+              description="User database that can be updated and saved"
+              factory="org.apache.catalina.users.MemoryUserDatabaseFactory"
+              pathname="conf/tomcat-users.xml" />
+  </GlobalNamingResources>
+
+  <Service name="Catalina">
+    <!-- HTTP Connector -->
+    <Connector port="<%= $http_port %>"
+               protocol="HTTP/1.1"
+               connectionTimeout="20000"
+               redirectPort="<%= $https_port %>"
+               maxThreads="200"
+               minSpareThreads="10"
+               enableLookups="false"
+               acceptCount="100"
+               compression="on"
+               compressionMinSize="2048"
+               compressibleMimeType="text/html,text/xml,text/plain,text/css,text/javascript,application/javascript,application/json" />
+
+    <!-- AJP Connector (disabled by default for security) -->
+    <!--
+    <Connector port="<%= $ajp_port %>"
+               protocol="AJP/1.3"
+               redirectPort="<%= $https_port %>"
+               secretRequired="true"
+               secret="your-ajp-secret" />
+    -->
+
+    <Engine name="Catalina" defaultHost="localhost">
+      <Realm className="org.apache.catalina.realm.LockOutRealm">
+        <Realm className="org.apache.catalina.realm.UserDatabaseRealm"
+               resourceName="UserDatabase"/>
+      </Realm>
+
+      <Host name="localhost"
+            appBase="webapps"
+            unpackWARs="true"
+            autoDeploy="true">
+
+        <Valve className="org.apache.catalina.valves.AccessLogValve"
+               directory="logs"
+               prefix="localhost_access_log"
+               suffix=".txt"
+               pattern="%h %l %u %t &quot;%r&quot; %s %b %D" />
+
+        <Valve className="org.apache.catalina.valves.RemoteIpValve"
+               remoteIpHeader="X-Forwarded-For"
+               protocolHeader="X-Forwarded-Proto" />
+      </Host>
+    </Engine>
+  </Service>
+</Server>

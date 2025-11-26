@@ -1,0 +1,15 @@
+---
+# Common configuration for all nodes
+
+# Tomcat defaults
+profile_tomcat::version: '9'
+profile_tomcat::http_port: 8080
+profile_tomcat::https_port: 8443
+profile_tomcat::ajp_port: 8009
+profile_tomcat::shutdown_port: 8005
+profile_tomcat::java_home: '/usr/lib/jvm/java-17-openjdk-amd64'
+profile_tomcat::java_opts: '-Xms512m -Xmx1024m'
+
+# Application settings
+profile_tomcat::app_name: 'myapp'
+profile_tomcat::app_war_source: 'puppet:///modules/profile_tomcat/sample.war'

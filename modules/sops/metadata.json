@@ -1,0 +1,25 @@
+{
+  "name": "custom-sops",
+  "version": "1.0.0",
+  "author": "Infrastructure Team",
+  "summary": "SOPS Hiera backend for Puppet",
+  "license": "MIT",
+  "source": "",
+  "dependencies": [],
+  "operatingsystem_support": [
+    {
+      "operatingsystem": "Ubuntu",
+      "operatingsystemrelease": ["22.04"]
+    },
+    {
+      "operatingsystem": "Debian",
+      "operatingsystemrelease": ["11", "12"]
+    }
+  ],
+  "requirements": [
+    {
+      "name": "puppet",
+      "version_requirement": ">= 7.0.0 < 9.0.0"
+    }
+  ]
+}

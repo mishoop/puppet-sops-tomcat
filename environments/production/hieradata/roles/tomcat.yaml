@@ -1,0 +1,7 @@
+---
+# Role-specific configuration for Tomcat servers
+
+facts_role: tomcat
+
+# These values can be overridden per-node
+profile_tomcat::java_opts: '-Xms512m -Xmx1024m -Djava.awt.headless=true'

@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(chmod:*)",
+      "mcp__terraform__get_latest_provider_version",
+      "Bash(terraform init:*)",
+      "Bash(terraform plan:*)",
+      "Bash(terraform apply:*)",
+      "Bash(cat:*)",
+      "Bash(git add:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

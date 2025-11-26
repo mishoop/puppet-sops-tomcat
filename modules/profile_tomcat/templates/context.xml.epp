@@ -1,0 +1,80 @@
+<%- |
+  Optional[String] $db_username,
+  Optional[String] $db_password,
+  Optional[String] $db_url,
+  Optional[String] $api_key,
+  Optional[String] $api_secret,
+  Optional[String] $session_secret,
+  Optional[Hash] $datasource_config,
+| -%>
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Context configuration managed by Puppet
+  Secrets are injected from SOPS-encrypted Hiera data
+-->
+<Context>
+    <!-- Disable session persistence across restarts -->
+    <Manager pathname="" />
+
+    <!-- Watch for context.xml changes -->
+    <WatchedResource>WEB-INF/web.xml</WatchedResource>
+    <WatchedResource>WEB-INF/tomcat-web.xml</WatchedResource>
+    <WatchedResource>${catalina.base}/conf/web.xml</WatchedResource>
+
+<% if $db_url and $db_username { -%>
+    <!-- Database connection pool - credentials from SOPS -->
+    <Resource name="jdbc/AppDB"
+              auth="Container"
+              type="javax.sql.DataSource"
+              factory="org.apache.tomcat.jdbc.pool.DataSourceFactory"
+              driverClassName="<%= if $db_url =~ /mysql/ { 'com.mysql.cj.jdbc.Driver' } elsif $db_url =~ /postgresql/ { 'org.postgresql.Driver' } else { 'com.mysql.cj.jdbc.Driver' } %>"
+              url="<%= $db_url %>"
+              username="<%= $db_username %>"
+              password="<%= $db_password %>"
+<% if $datasource_config { -%>
+              maxActive="<%= $datasource_config['max_active'] ? { default => 100 } %>"
+              maxIdle="<%= $datasource_config['max_idle'] ? { default => 30 } %>"
+              minIdle="<%= $datasource_config['min_idle'] ? { default => 10 } %>"
+              validationQuery="<%= $datasource_config['validation_query'] ? { default => 'SELECT 1' } %>"
+<% } else { -%>
+              maxActive="100"
+              maxIdle="30"
+              minIdle="10"
+              validationQuery="SELECT 1"
+<% } -%>
+              testOnBorrow="true"
+              testOnReturn="false"
+              testWhileIdle="true"
+              timeBetweenEvictionRunsMillis="30000"
+              minEvictableIdleTimeMillis="60000"
+              removeAbandoned="true"
+              removeAbandonedTimeout="60"
+              logAbandoned="true" />
+
+<% } -%>
+<% if $api_key { -%>
+    <!-- API credentials - from SOPS encrypted secrets -->
+    <Environment name="app/apiKey"
+                 value="<%= $api_key %>"
+                 type="java.lang.String"
+                 override="false" />
+<% } -%>
+<% if $api_secret { -%>
+    <Environment name="app/apiSecret"
+                 value="<%= $api_secret %>"
+                 type="java.lang.String"
+                 override="false" />
+<% } -%>
+<% if $session_secret { -%>
+    <Environment name="app/sessionSecret"
+                 value="<%= $session_secret %>"
+                 type="java.lang.String"
+                 override="false" />
+<% } -%>
+
+    <!-- Additional application configuration -->
+    <Environment name="app/environment"
+                 value="production"
+                 type="java.lang.String"
+                 override="false" />
+</Context>

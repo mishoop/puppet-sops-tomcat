@@ -1,0 +1,28 @@
+---
+version: 5
+
+defaults:
+  datadir: hieradata
+  data_hash: yaml_data
+
+hierarchy:
+  - name: "Secret data (SOPS encrypted)"
+    lookup_key: sops_lookup_key
+    paths:
+      - "secrets/nodes/%{trusted.certname}.yaml"
+      - "secrets/roles/%{facts.role}.yaml"
+      - "secrets/common.yaml"
+    options:
+      sops_path: /usr/local/bin/sops
+      age_key_file: /etc/puppetlabs/puppet/sops/age-key.txt
+
+  - name: "Per-node data"
+    paths:
+      - "nodes/%{trusted.certname}.yaml"
+
+  - name: "Per-role data"
+    paths:
+      - "roles/%{facts.role}.yaml"
+
+  - name: "Common data"
+    path: "common.yaml"

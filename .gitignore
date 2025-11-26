@@ -1,0 +1,37 @@
+# Terraform
+terraform/.terraform/
+terraform/*.tfstate
+terraform/*.tfstate.*
+terraform/terraform.tfvars
+terraform/.terraform.lock.hcl
+*.tfplan
+
+# SOPS keys (never commit private keys!)
+**/age-key.txt
+**/sops-key.txt
+*.key
+
+# Decrypted secrets (should always be encrypted in repo)
+# Note: Encrypted .yaml files in secrets/ ARE committed
+environments/*/hieradata/secrets/*.decrypted.yaml
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+*.sublime-*
+
+# Puppet generated files
+.librarian/
+.tmp/
+vendor/
+spec/fixtures/
+
+# Log files
+*.log
