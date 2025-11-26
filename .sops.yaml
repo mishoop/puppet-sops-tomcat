@@ -3,7 +3,7 @@
 
 creation_rules:
   # Encrypt all secret files with age
-  - path_regex: environments/.*/hieradata/secrets/.*\.yaml$
+  - path_regex: hieradata/secrets/.*\.yaml$
     age: >-
       age1yqd88u5lzxysrn5cgkf6xsqvek4nqqhnantzktpwkepnfw4ur4zqngjqsc 
     # Replace the above with your actual age public key from:

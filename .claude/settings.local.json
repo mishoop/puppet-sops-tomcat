@@ -10,7 +10,8 @@
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Bash(git push:*)",
-      "Bash(ssh root@167.235.76.159 'ls -la /etc/puppetlabs/code/environments/production/')"
+      "Bash(ssh root@167.235.76.159 'ls -la /etc/puppetlabs/code/environments/production/')",
+      "Bash(ssh:*)"
     ],
     "deny": [],
     "ask": []
