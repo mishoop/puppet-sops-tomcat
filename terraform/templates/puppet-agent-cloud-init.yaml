@@ -25,10 +25,11 @@ runcmd:
 
   # Configure Puppet Agent
   - |
-    cat > /etc/puppetlabs/puppet/puppet.conf << 'EOF'
+    CERTNAME=$(hostname -f)
+    cat > /etc/puppetlabs/puppet/puppet.conf << EOF
     [main]
     server = puppet-master
-    certname = $(hostname -f)
+    certname = $CERTNAME
     environment = production
     runinterval = 30m
 
