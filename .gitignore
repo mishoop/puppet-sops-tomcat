@@ -14,6 +14,7 @@ terraform/.terraform.lock.hcl
 # Decrypted secrets (should always be encrypted in repo)
 # Note: Encrypted .yaml files in secrets/ ARE committed
 environments/*/hieradata/secrets/*.decrypted.yaml
+*.plain
 
 # OS files
 .DS_Store
