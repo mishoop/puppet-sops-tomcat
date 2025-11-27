@@ -12,4 +12,4 @@ profile_tomcat::java_opts: '-Xms512m -Xmx1024m'
 
 # Application settings
 profile_tomcat::app_name: 'myapp'
-profile_tomcat::app_war_source: 'puppet:///modules/profile_tomcat/sample.war'
+# profile_tomcat::app_war_source: 'puppet:///modules/profile_tomcat/sample.war'

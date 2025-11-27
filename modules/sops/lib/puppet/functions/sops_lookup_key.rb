@@ -18,29 +18,22 @@ Puppet::Functions.create_function(:sops_lookup_key) do
     # Get options
     sops_path = options['sops_path'] || '/usr/local/bin/sops'
     age_key_file = options['age_key_file']
-    datadir = options['datadir'] || context.interpolate('%{environment}/hieradata')
 
-    # Handle paths
-    paths = options['paths'] || []
-    paths = [paths] unless paths.is_a?(Array)
+    # Hiera 5 passes the resolved path as 'path' (singular)
+    full_path = options['path']
+    return context.not_found unless full_path
 
-    paths.each do |path|
-      interpolated_path = context.interpolate(path)
-      full_path = File.join(Puppet.settings[:environmentpath], datadir, interpolated_path)
+    return context.not_found unless File.exist?(full_path)
 
-      next unless File.exist?(full_path)
+    begin
+      data = decrypt_sops_file(full_path, sops_path, age_key_file)
 
-      begin
-        data = decrypt_sops_file(full_path, sops_path, age_key_file)
-
-        if data.is_a?(Hash) && data.key?(key)
-          context.cache(key, data[key])
-          return data[key]
-        end
-      rescue => e
-        context.explain { "SOPS decryption failed for #{full_path}: #{e.message}" }
-        next
+      if data.is_a?(Hash) && data.key?(key)
+        context.cache(key, data[key])
+        return data[key]
       end
+    rescue => e
+      context.explain { "SOPS decryption failed for #{full_path}: #{e.message}" }
     end
 
     context.not_found
